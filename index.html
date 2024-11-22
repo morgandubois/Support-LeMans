@@ -1,3 +1,25 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $to = "morgan.dubois@gknautomotive.com";
+    $subject = "Nouveau message de Support Local - Le Mans";
+    $name = htmlspecialchars($_POST["name"]);
+    $email = htmlspecialchars($_POST["email"]);
+    $message = htmlspecialchars($_POST["message"]);
+    $headers = "From: $email\r\nReply-To: $email\r\nContent-Type: text/plain; charset=utf-8";
+
+    // Prépare le contenu du message
+    $emailContent = "Nom: $name\n";
+    $emailContent .= "Email: $email\n\n";
+    $emailContent .= "Message:\n$message\n";
+
+    // Envoie l'email
+    if (mail($to, $subject, $emailContent, $headers)) {
+        $success = true;
+    } else {
+        $success = false;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,26 +34,33 @@
         <p>Un soutien humain proche de chez vous, au Mans.</p>
     </header>
     <main>
-        <section class="about">
-            <h2>Qui sommes-nous ?</h2>
-            <p>Nous offrons un soutien personnalisé aux habitants du Mans pour répondre à vos besoins locaux. 
-               Besoin d'écoute, d'aide ou de conseils ? Nous sommes là pour vous.</p>
-        </section>
-        <section class="contact">
-            <h2>Contactez-nous</h2>
-            <form action="#" method="post">
-                <label for="name">Votre nom :</label>
-                <input type="text" id="name" name="name" placeholder="Votre nom" required>
+        <?php if (isset($success) && $success): ?>
+            <div class="confirmation">
+                <h2>Merci pour votre message !</h2>
+                <p>Votre demande a bien été envoyée. Un membre de Support Local - Le Mans vous répondra au plus vite.</p>
+            </div>
+        <?php elseif (isset($success) && !$success): ?>
+            <div class="error">
+                <h2>Une erreur est survenue</h2>
+                <p>Nous n'avons pas pu envoyer votre message. Veuillez réessayer plus tard.</p>
+            </div>
+        <?php else: ?>
+            <section class="contact">
+                <h2>Contactez-nous</h2>
+                <form action="" method="post">
+                    <label for="name">Votre nom :</label>
+                    <input type="text" id="name" name="name" placeholder="Votre nom" required>
 
-                <label for="email">Votre email :</label>
-                <input type="email" id="email" name="email" placeholder="Votre email" required>
+                    <label for="email">Votre email :</label>
+                    <input type="email" id="email" name="email" placeholder="Votre email" required>
 
-                <label for="message">Votre message :</label>
-                <textarea id="message" name="message" rows="5" placeholder="Expliquez-nous comment nous pouvons vous aider" required></textarea>
+                    <label for="message">Votre message :</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Expliquez-nous comment nous pouvons vous aider" required></textarea>
 
-                <button type="submit">Envoyer</button>
-            </form>
-        </section>
+                    <button type="submit">Envoyer</button>
+                </form>
+            </section>
+        <?php endif; ?>
     </main>
     <footer>
         <p>© 2024 Support Local - Le Mans. Tous droits réservés.</p>
